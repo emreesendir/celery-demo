@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Hello Celery</h1>
+
+    <form id='sumForm'>
+        <fieldset>
+            <legend>SUM</legend>
+            <label for="number1">Number 1</label>
+            <input type="number" name="number1" id='sumNumber1'>
+            <label for="number2">Number 2</label>
+            <input type="number" name="number2" id='sumNumber2'>
+            <input type="submit">
+        </fieldset>
+    </form>
+
+
+
+    <script>
+        //websocket setup
+        const socket = new WebSocket('ws://localhost:8000/ws/demo-consumer/');
+
+        socket.addEventListener('open', function (event) {
+            console.log('ws connection opened', event)
+        });
+
+        socket.addEventListener('message', function (event) {
+            console.log('From server', event.data)
+        });
+
+        socket.addEventListener('close', function (event) {
+            console.log('ws connection closed', event)
+        });
+
+        socket.addEventListener('error', function (event) {
+            console.log('ws connection failed!', event)
+        });
+
+        //form submit
+        var sumForm = document.getElementById("sumForm");
+
+        sumForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            var sumNumber1 = document.getElementById('sumNumber1').value;
+            var sumNumber2 = document.getElementById('sumNumber2').value;
+            socket.send(JSON.stringify({'operation': 'sum', 'number1': sumNumber1, 'number2':sumNumber2}))
+
+        })
+    </script>
+</body>
+</html>
